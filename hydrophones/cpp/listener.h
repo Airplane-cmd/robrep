@@ -12,7 +12,7 @@ uint32_t getFrequency();
 bool getDistance();
 //void printData();
 uint16_t angle;
-int8_t frequency;
+int frequency;
 bool distance; 
 #endif
 

@@ -17,11 +17,12 @@ std::uint16_t getBytesAsUint16(uint8_t first, uint8_t second)
 }
 void parseData(const char *data)
 {
-	std::system("clear");
+//	std::system("clear");
 	angle = getBytesAsUint16(data[2], data[3]);
-	frequency = uint(data[5]);
+	frequency = int(data[5]);
 	distance = (uint8_t(data[4]) == 1);
-	std::cout << angle << ' ' distance << ' ' << frequency << '\n';
+	std::cout << angle << ' ' << distance << ' ' << frequency << '\n';
+//	printRawData(data);
 //	std::cout << "Angle:     " << angle << '\n';
 //	std::cout << "Distance:  " << ((distance) ? ("under AUV") : ("Far from AUV")) << '\n';
 //	std::cout << "Frequency: " << frequency << '\n';
@@ -89,11 +90,14 @@ bool checkCRC(const char *data)
 	return (calculateCRC(reinterpret_cast<uint8_t *>(const_cast<char *>(data)), 7) == getBytesAsUint16(data[7], data[8])) ? 1 : 0;//const and size?
 	
 }
-int main() 
+int main(int argc, char **argv) 
 {
 
   // Open the serial port. Change device path as needed (currently set to an standard FTDI USB-UART cable type device)
-  int serial_port = open("/dev/ttyUSB0", O_RDWR);
+	std::string comString{"/dev/ttyUSB0"} ;
+	comString = ((argc == 2) ? (argv[1]) : (comString));
+//	std::cout << argc << '\n';
+	int serial_port = open(comString.c_str(), O_RDWR);
 
   // Create new termios struct, we call it 'tty' for convention
   struct termios tty;
