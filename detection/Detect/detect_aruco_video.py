@@ -7,6 +7,7 @@ import imutils
 import time
 import cv2
 import sys
+import math
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -14,7 +15,27 @@ ap.add_argument("-t", "--type", type=str,
 	default="DICT_ARUCO_ORIGINAL",
 	help="type of ArUCo tag to detect")
 args = vars(ap.parse_args())
+def getCenter(x_p, y_p):
+	return [x_p/2, y_p/2]
+def calculateZY(corners_p = []):
+	if len(corners_p) > 0:
+		angle = 0		
+#		print(corners_p)
+		for i in range (3):
+			j = i + 1
+			if (i == 3):
+				j = 0
+			dx = corners_p[i][0] - corners_p[j][1]
+			dy = corners_p[i][0] - corners_p[j][1]
+			angle += math.atan(dx / dy)
+		angle /= 4
+		return angle
 
+
+
+    
+#def getFuckingConstant(distance):
+	   
 # define names of each possible ArUco tag OpenCV supports
 ARUCO_DICT = {
 	"DICT_4X4_50": cv2.aruco.DICT_4X4_50,
@@ -43,8 +64,7 @@ ARUCO_DICT = {
 # verify that the supplied ArUCo tag exists and is supported by
 # OpenCV
 if ARUCO_DICT.get(args["type"], None) is None:
-	print("[INFO] ArUCo tag of '{}' is not supported".format(
-		args["type"]))
+	print("[INFO] ArUCo tag of '{}' is not supported".format(args["type"]))
 	sys.exit(0)
 
 # load the ArUCo dictionary and grab the ArUCo parameters
@@ -55,6 +75,11 @@ arucoParams = cv2.aruco.DetectorParameters_create()
 # initialize the video stream and allow the camera sensor to warm up
 print("[INFO] starting video stream...")
 vs = VideoStream(src=0).start()
+width_g = vs.stream.get(cv2.CAP_PROP_FRAME_WIDTH)
+height_g = vs.stream.get(cv2.CAP_PROP_FRAME_HEIGHT)
+print(width_g, height_g)
+print(getCenter(width_g, height_g))
+
 time.sleep(0.2)
 
 # loop over the frames from the video stream
@@ -63,16 +88,13 @@ while True:
 	# to have a maximum width of 600 pixels
 	frame = vs.read()
 	frame = imutils.resize(frame, width=1000)
-
-	# detect ArUco markers in the input frame
-	(corners, ids, rejected) = cv2.aruco.detectMarkers(frame,
-		arucoDict, parameters=arucoParams)
-
+   	# detect ArUco markers in the input frame
+	(corners, ids, rejected) = cv2.aruco.detectMarkers(frame, arucoDict, parameters=arucoParams)
 	# verify *at least* one ArUco marker was detected
+	calculateZY(corners)
 	if len(corners) > 0:
 		# flatten the ArUco IDs list
 		ids = ids.flatten()
-
 		# loop over the detected ArUCo corners
 		for (markerCorner, markerID) in zip(corners, ids):
 			# extract the marker corners (which are always returned
@@ -97,6 +119,7 @@ while True:
 			# ArUco marker
 			cX = int((topLeft[0] + bottomRight[0]) / 2.0)
 			cY = int((topLeft[1] + bottomRight[1]) / 2.0)
+			print("[EVENT] id: ", markerID, " X: ", cX, " Y: ", cY)
 			cv2.circle(frame, (cX, cY), 4, (0, 0, 255), -1)
 
 			# draw the ArUco marker ID on the frame
