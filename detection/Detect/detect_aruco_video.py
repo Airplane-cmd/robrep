@@ -21,7 +21,7 @@ def calculateZY(corners_p = []):
 	if len(corners_p) > 0:
 		angle = 0		
 #		print(corners_p)
-		for i in range (3):
+		for i in range (len(corners_p)):
 			j = i + 1
 			if (i == 3):
 				j = 0
