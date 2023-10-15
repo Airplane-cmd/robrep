@@ -6,12 +6,14 @@ SDL_Handle::SDL_Handle()
   m_alarm_f = 0;
   m_something_f = 0;
   SDL_InitSubSystem(SDL_INIT_JOYSTICK);
-  SDL_Event event;
-  m_spin(event);
+//	m_spin();
+//  SDL_Event event;
+	thread_pull.push_back(std::thread(&SDL_Handle::m_spin, this));
 }
 SDL_Handle::~SDL_Handle()
 {
-	for(SDL_Joystick *it : m_joy_ptr_vctr)	delete it;
+	for(std::thread &it : thread_pull)	it.join();
+//	for(SDL_Joystick *it : m_joy_ptr_vctr)	delete it;
 }
 void SDL_Handle::m_sync(uint8_t id)
 {
@@ -36,13 +38,13 @@ void SDL_Handle::m_desync(uint8_t id)
   m_indexes_vctr.clear();
   for(uint8_t i = 0; i < 255; ++i)	m_sync(i);
 }
-void SDL_Handle::m_spin(SDL_Event &event)
+void SDL_Handle::m_spin()
 {
   for(;;)
   {
     if(m_exit_f)	return;
     usleep(5000);
-    m_handleEvents(event);
+    m_handleEvents(m_event);
     m_printControls();
   }
 }
@@ -81,15 +83,14 @@ void SDL_Handle::m_handleEvents(SDL_Event &event)
 			{
 	  		id = event.jbutton.which;
 	  		uint8_t index = event.jbutton.button;
-	  		if(m_buttonsValues_vctr.at(id).size() > index) m_buttonsValues_vctr.at(m_getNormalId(id)).at(index) = 0;
+	  		if(m_buttonsValues_vctr.at(m_getNormalId(id)).size() > index) m_buttonsValues_vctr.at(m_getNormalId(id)).at(index) = 0;
 	  		break;
 			}
       case(SDL_JOYBUTTONDOWN):
 			{
-	  		std::cout << "[!] Button down\n";
 	  		id = event.jbutton.which;
 	  		uint8_t index = event.jbutton.button;
-	  		if(m_buttonsValues_vctr.at(id).size() > index) m_buttonsValues_vctr.at(m_getNormalId(id)).at(index) = 1;
+	  		if(m_buttonsValues_vctr.at(m_getNormalId(id)).size() > index) m_buttonsValues_vctr.at(m_getNormalId(id)).at(index) = 1;
 	  		break;
 			}
      	case(SDL_JOYDEVICEREMOVED):
