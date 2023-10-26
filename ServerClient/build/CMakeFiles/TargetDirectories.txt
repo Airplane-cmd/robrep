@@ -1,0 +1,4 @@
+/home/bthd/WS/Networking/ServerClient/build/CMakeFiles/client.dir
+/home/bthd/WS/Networking/ServerClient/build/CMakeFiles/server.dir
+/home/bthd/WS/Networking/ServerClient/build/CMakeFiles/edit_cache.dir
+/home/bthd/WS/Networking/ServerClient/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/server.dir/home/bthd/WS/Networking/ServerClient/src/SimpleServer.cpp.o -o server 
