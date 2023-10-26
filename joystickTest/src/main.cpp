@@ -12,13 +12,11 @@ void printControls();
 void desync(uint8_t);
 void spin(SDL_Event);
 uint8_t getNormalId(uint8_t);
-std::shared_ptr<std::vector<int16_t>> getRightVector(std::list<std::pair<std::vector<int16_t>, uint8_t>>, uint8_t);
 std::vector<SDL_Joystick*> joy_ptr_vctr; 
 int16_t wtf = 0;
 uint8_t count = 0;
 bool curseSet = 0;//fuck you 
 //SDL_Event event;
-int8_t commandPrint_g = -1;
 int8_t idPrint_g = -1;
 bool alarm_f = 0;
 bool something_f = 0;
@@ -55,28 +53,9 @@ void sync(uint8_t id)
 //  getRightVector(buttonsValues_vctr, id)->resize(SDL_JoystickNumButtons(joy_ptr), 0);
 }
 
-std::shared_ptr<std::vector<int16_t>> getRightVector(std::list<std::pair<std::vector<int16_t>, uint8_t>> struct_, uint8_t id)
-{
-  for(auto it : struct_)
-  {
-    std::cout << "id: " << uint16_t(it.second) << '\n';
-    if(it.second == id)
-    {
-      std::cout << "nice?\n";
-      return std::make_shared<std::vector<int16_t>>(it.first);
-    }
-  }
-  std::cout << "not nice\n";
-  return std::make_shared<std::vector<int16_t>>(struct_.front().first);
-}
 
 void desync(uint8_t id)
 {
-/*  joy_ptr_vctr.erase(joy_ptr_vctr.begin() + id);
-  axesValues_vctr.erase(axesValues_vctr.begin() + id);
-  buttonsValues_vctr.erase(buttonsValues_vctr.begin() + id);
-  indexes_vctr.erase(indexes_vctr.begin() + id);
-*/
   joy_ptr_vctr.clear();
   initialState_vctr.clear();
   axesValues_vctr.clear();
@@ -84,17 +63,10 @@ void desync(uint8_t id)
   initialState_vctr.clear();
   indexes_vctr.clear();
   for(uint8_t i = 0; i < 255; ++i)	sync(i);
-//  std::vector<uint8_t> ids;
-   
-
-
-
 }
 
 void spin(SDL_Event event)
 {
-//    SDL_JoystickUpdate();
-//    std::cout << "starting iteration in spin()\n";
   for(;;)
   {
     if(exit_f)	return;
@@ -105,9 +77,6 @@ void spin(SDL_Event event)
 }
 void handleEvents(SDL_Event event)
 {
-//  SDL_JoystickUpdate();
-//  std::cout << "Handling events?\n";
-//  SDL_Event event;
 while(SDL_PollEvent(&event) > 0)
 {
   switch(event.type)
@@ -115,7 +84,6 @@ while(SDL_PollEvent(&event) > 0)
     uint8_t id;
     case(SDL_JOYDEVICEADDED):
       id = event.jdevice.which;//print command if received
-      commandPrint_g = 1;
       idPrint_g = id;
       alarm_f = 1;
       something_f = 1;

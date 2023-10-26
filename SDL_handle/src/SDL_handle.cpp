@@ -27,6 +27,10 @@ void SDL_Handle::m_sync(uint8_t id)
   m_buttonsValues_vctr[id].resize(SDL_JoystickNumButtons(it));
   m_initialState_vctr[id].resize(SDL_JoystickNumAxes(it));
   m_indexes_vctr.push_back(std::pair<uint8_t, uint8_t>(id, SDL_JoystickInstanceID(it)));
+	
+	SDL_JoystickSetLED(it, 255, 255, 255);
+	SDL_Haptic* effect_ptr = SDL_HapticOpenFromJoystick(it); 
+	SDL_HapticRunEffect(effect_ptr, 5, 5);
 }
 void SDL_Handle::m_desync(uint8_t id)
 {
@@ -131,11 +135,17 @@ void SDL_Handle::m_printControls()
     printf("Number of Axes: %d\n", SDL_JoystickNumAxes(it));
     printf("Number of Buttons: %d\n", SDL_JoystickNumButtons(it));
     printf("Number of Balls: %d\n", SDL_JoystickNumBalls(it));
-    std::cout << "Size of joystick vector: " << m_joy_ptr_vctr.size() << '\n';
+		printf("Number of Hats: %d\n", SDL_JoystickNumHats(it));
+		printf("Has haptic features: %d\n", SDL_JoystickIsHaptic(it));
+		printf("Has modifieble LED: %d\n", SDL_JoystickHasLED(it));
+		std::cout << "Size of joystick vector: " << m_joy_ptr_vctr.size() << '\n';
     std::cout << "Size of axes list: " << m_buttonsValues_vctr.at(i).size() << '\n';
 //    std::cout << "Size of it's vector: " << buttonsValues_vctr.front().first.size() << '\n';
     std::cout << "Size of axes vector: " << m_axesValues_vctr.at(i).size() << '\n'; 
     std::cout << "Size of buttons vector: " << m_buttonsValues_vctr.at(i).size() << '\n';
+
+		SDL_JoystickSetLED(it, 255, 255, 255);
+
     std::cout << "Vector of ids: [ " ;
     for(std::pair<uint8_t, uint8_t> it : m_indexes_vctr)  std::cout << (uint16_t)it.first << ", " << (uint16_t)it.second << "; ";
     std::cout << " ]\n";
